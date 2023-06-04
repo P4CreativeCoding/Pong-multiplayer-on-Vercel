@@ -1,4 +1,5 @@
-// Multiplayer, Repo, Vercel fehlt noch  
+// Multiplayer, Repo, Vercel fehlt noch  Socket.io
+//Nochmal Repo für mich und dann mit Vercel hosten!! Github Pages hosten? nee
 
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
