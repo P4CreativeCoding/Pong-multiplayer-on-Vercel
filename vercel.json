@@ -1,0 +1,4 @@
+{
+    "version": 2,
+    "builds": [{ "src": "Pong.js", "use": "@vercel/node" }]
+  }
