@@ -6,7 +6,7 @@ const context = canvas.getContext('2d');
 const grid = 15;
 const paddleHeight = grid * 5;
 const maxPaddleY = canvas.height - grid - paddleHeight;
-var paddleSpeed = 6;
+var paddleSpeed = 10;
 var ballSpeed = 5;
 
 const leftPaddle = {
