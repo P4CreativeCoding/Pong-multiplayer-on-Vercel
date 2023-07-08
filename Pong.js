@@ -12,9 +12,15 @@ const ws = new WebSocket("ws://localhost:8082");
 
 ws.addEventListener("open", () => {
 
-  console.log("wir sind conecnte");
+  console.log("wir sind connected");
 
 })
+
+ws.addEventListener("message",function message(data, isBinary) {
+  
+  const message = isBinary ? data : data.data.toString();
+  console.log(message);
+});
 
 const leftPaddle = {
     
@@ -68,7 +74,7 @@ function game() {
   leftPaddle.y += leftPaddle.velocitY;
   rightPaddle.y += rightPaddle.velocitY;
 
-  ws.send(rightPaddle.y);
+  ws.send(rightPaddle.y); //
 
 // Damit Torwärter nicht durch Wände glitchen
   if (leftPaddle.y < grid) {
