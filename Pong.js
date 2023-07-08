@@ -19,7 +19,7 @@ ws.addEventListener("open", () => {
 ws.addEventListener("message",function message(data, isBinary) {
   
   const message = isBinary ? data : data.data.toString();
-  console.log(message);
+  leftPaddle.y = message;
 });
 
 const leftPaddle = {
@@ -71,7 +71,6 @@ function game() {
   context.clearRect(0,0,canvas.width,canvas.height);
 
 // Torwärter werden bewegt
-  leftPaddle.y += leftPaddle.velocitY;
   rightPaddle.y += rightPaddle.velocitY;
 
   ws.send(rightPaddle.y); //
