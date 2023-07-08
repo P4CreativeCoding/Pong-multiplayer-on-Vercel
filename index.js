@@ -16,7 +16,7 @@ import { width, height, grid, paddleHeight } from "./static/Konstantin.js";
 
 var ballSpeed = -4;
 
-const paddle1 = {
+let paddle1 = {
     
   x: grid * 2,
   y: height / 2 - paddleHeight / 2,
@@ -26,7 +26,7 @@ const paddle1 = {
 // Geschwindigkeit vom Torwart
   velocitY: 0
 };
-const paddle2 = {
+let paddle2 = {
 
   x: width - grid * 3,
   y: height / 2 - paddleHeight / 2,
@@ -62,62 +62,38 @@ function collides(obj1, obj2) {
          obj1.y + obj1.height > obj2.y;
 }
 
+let id = 1
+let player1;
+let player2;
+
 wss.on("connection", ws => {
 
   console.log("Client ist connected");
 
+  if (id == 1) {
+    player1 = ws;
+    id++;
+  } else {
+    player2 = ws;
+  }
+
   ws.on("message",  function message(data, isBinary) {
     const message = isBinary ? data : data.toString();
 
-    paddle1.y = message;
+    let parsed = JSON.parse(message);
+
+    if (parsed.id == 1) {
+      paddle1.y = parsed.paddle.y;
+      player1 = ws;
+      id++;
+    } else {
+      paddle2.y = parsed.paddle.y;
+      player2 = ws;
+    }
 
   })
 
-  setInterval(() => {
-    // Ball bewegt sich
-    ball.x += ball.velocityX;
-    ball.y += ball.velocitY;
-    
-    // Schicke Link
-    ws.send(JSON.stringify({
-      ball: ball,
-    }));
-  
-  
-    // Ball soll auch nicht durch Wände glitchen
-    if (ball.y < grid) {
-      ball.y = grid;
-      ball.velocitY *= -1;
-    }
-    else if (ball.y + grid > height - grid) {
-      ball.y = height - grid * 2;
-      ball.velocitY *= -1;
-    }
-  
-    // Wenn Ball mit Torwart kollidiert wird Geschwindigkeit geändert
-    if (collides(ball, paddle1)) {
-      ball.velocityX *= -1;
-  
-  // Ball soll nicht nochmal kollidieren
-      ball.x = paddle1.x + paddle1.width;
-    }
-    else if (collides(ball, paddle2)) {
-      ball.velocityX *= -1;
-      ball.x = paddle2.x - ball.width;
-    }
-  
-  // Wenn Ball im Tor landet wird er resetet
-    if ( (ball.x < 0 || ball.x > width) && !ball.reset) {
-      ball.reset = true;
-  
-      // Transfer to generic js
-      setTimeout(() => { // Kurz Zeit bevor Ball spawnt
-        ball.reset = false;
-        ball.x = width / 2;
-        ball.y = height / 2;
-      }, 400);
-    }
-  }, 16);
+
 
   ws.on("close", function close(code, data) {
     
@@ -127,3 +103,58 @@ wss.on("connection", ws => {
   })
 
 })
+
+setInterval(() => {
+  if (player1 != null && player2 != null) {
+  
+  // Ball bewegt sich
+  ball.x += ball.velocityX;
+  ball.y += ball.velocitY;
+
+  // Schicke Link
+  player1.send(JSON.stringify({
+    ball: ball,
+    id: 1,
+    paddle: paddle2
+  }));
+  player2.send(JSON.stringify({
+    ball: ball,
+    id: 2,
+    paddle: paddle1
+  }));
+
+  // Ball soll auch nicht durch Wände glitchen
+  if (ball.y < grid) {
+    ball.y = grid;
+    ball.velocitY *= -1;
+  }
+  else if (ball.y + grid > height - grid) {
+    ball.y = height - grid * 2;
+    ball.velocitY *= -1;
+  }
+
+  // Wenn Ball mit Torwart kollidiert wird Geschwindigkeit geändert
+  if (collides(ball, paddle1)) {
+    ball.velocityX *= -1;
+
+// Ball soll nicht nochmal kollidieren
+    ball.x = paddle1.x + paddle1.width;
+  }
+  else if (collides(ball, paddle2)) {
+    ball.velocityX *= -1;
+    ball.x = paddle2.x - ball.width;
+  }
+
+// Wenn Ball im Tor landet wird er resetet
+  if ( (ball.x < 0 || ball.x > width) && !ball.reset) {
+    ball.reset = true;
+
+    // Transfer to generic js
+    setTimeout(() => { // Kurz Zeit bevor Ball spawnt
+      ball.reset = false;
+      ball.x = width / 2;
+      ball.y = height / 2;
+    }, 400);
+  } 
+}
+}, 16);

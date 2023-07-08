@@ -4,6 +4,8 @@ import { width, height, grid, paddleHeight, paddleSpeed, maxPaddleY } from "./Ko
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
 
+let id;
+
 const ws = new WebSocket("ws://localhost:8082");
 
 ws.addEventListener("open", () => {
@@ -18,6 +20,22 @@ ws.addEventListener("message",function message(data, isBinary) {
 
   let foo = JSON.parse(message);
   ball = foo.ball;
+
+  if (id == null) {
+    if (foo.id == 1) {
+      id = 1;
+      ourPaddle = rightPaddle;
+      otherPaddle = leftPaddle;
+      console.log("Wir sind Spieler 1");
+    } else {
+      id = 2;
+      ourPaddle = leftPaddle;
+      otherPaddle = rightPaddle;
+      console.log("Wir sind Spieler 2");
+    }
+  }
+
+  otherPaddle.y = foo.paddle.y;
 
 //  leftPaddle.y = message;
 });
@@ -50,6 +68,17 @@ const leftPaddle = {
 // Geschwindigkeit vom Torwart
   velocitY: 0
 };
+let ourPaddle = leftPaddle;
+let otherPaddle = rightPaddle;
+
+ws.addEventListener("id",function message(data, isBinary) {
+  
+  const message = isBinary ? data : data.data.toString();
+
+  id = message;
+
+
+});
 
 // Spiel Ablauf
 function game() {
@@ -57,23 +86,19 @@ function game() {
   context.clearRect(0,0,width,height);
 
 // Torwärter werden bewegt
-  rightPaddle.y += rightPaddle.velocitY;
+  ourPaddle.y += ourPaddle.velocitY;
 
-  ws.send(rightPaddle.y); //
+  ws.send(JSON.stringify({
+    id: id,
+    paddle: ourPaddle,
+  }));
 
 // Damit Torwärter nicht durch Wände glitchen
-  if (leftPaddle.y < grid) {
-    leftPaddle.y = grid;
+  if (ourPaddle.y < grid) {
+    ourPaddle.y = grid;
   }
-  else if (leftPaddle.y > maxPaddleY) {
-    leftPaddle.y = maxPaddleY;
-  }
-
-  if (rightPaddle.y < grid) {
-    rightPaddle.y = grid;
-  }
-  else if (rightPaddle.y > maxPaddleY) {
-    rightPaddle.y = maxPaddleY;
+  else if (ourPaddle.y > maxPaddleY) {
+    ourPaddle.y = maxPaddleY;
   }
 
 // Torwärter zeichnen
@@ -101,32 +126,18 @@ document.addEventListener('keydown', function(e) {
 //SPIELER 1
 // Pfeiltaste hoch
   if (e.which === 38) { //e.wich speichert was rein kommt (zb Keypressed) e=event also welcher Key wurde gedrückt
-    rightPaddle.velocitY = -paddleSpeed;
+    ourPaddle.velocitY = -paddleSpeed;
   }
 // Pfeiltaste runter
   else if (e.which === 40) {
-    rightPaddle.velocitY = paddleSpeed;
-  }
-
-//SPIELER 2
-// W
-  if (e.which === 87) {
-    leftPaddle.velocitY = -paddleSpeed;
-  }
-// A
-  else if (e.which === 83) {
-    leftPaddle.velocitY = paddleSpeed;
+    ourPaddle.velocitY = paddleSpeed;
   }
 });
 
 // Bewegung stoppen wenn Taste loslassen
 document.addEventListener('keyup', function(e) {
   if (e.which === 38 || e.which === 40) {
-    rightPaddle.velocitY = 0;
-  }
-
-  if (e.which === 83 || e.which === 87) {
-    leftPaddle.velocitY = 0;
+    ourPaddle.velocitY = 0;
   }
 });
 
