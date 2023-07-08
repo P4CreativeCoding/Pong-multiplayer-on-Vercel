@@ -1,5 +1,4 @@
-// Multiplayer, Socket.io
-//vercel
+// "LogIn", Multiplayer (Sockets), 5 Unit Tests
 
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
@@ -8,6 +7,14 @@ const paddleHeight = grid * 5;
 const maxPaddleY = canvas.height - grid - paddleHeight;
 var paddleSpeed = 6;
 var ballSpeed = 5;
+
+const ws = new WebSocket("ws://localhost:8082");
+
+ws.addEventListener("open", () => {
+
+  console.log("wir sind conecnte");
+
+})
 
 const leftPaddle = {
     
@@ -60,6 +67,8 @@ function game() {
 // Torwärter werden bewegt
   leftPaddle.y += leftPaddle.velocitY;
   rightPaddle.y += rightPaddle.velocitY;
+
+  ws.send(rightPaddle.y);
 
 // Damit Torwärter nicht durch Wände glitchen
   if (leftPaddle.y < grid) {
