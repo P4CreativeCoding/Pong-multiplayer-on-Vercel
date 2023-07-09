@@ -7,7 +7,7 @@ const context = canvas.getContext('2d');
 let id;
 
 //const ws = io.connect("ws://localhost:3000");
-const ws = io.connect("wss://pong-multiplayer-bbwp.onrender.com");
+const ws = io.connect("wss://multiplayer-pong.onrender.com");
 
 ws.on("open", () => {
 
