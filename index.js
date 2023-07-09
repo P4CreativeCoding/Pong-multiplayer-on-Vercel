@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 
 import WebSocket, { WebSocketServer } from 'ws';
 
-const wss = new WebSocketServer ({ port: 8082 })
+const wss = new WebSocketServer ({ port: port })
 
 app.use(express.static('static'));
 
