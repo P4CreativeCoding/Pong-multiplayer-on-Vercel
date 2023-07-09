@@ -2,14 +2,16 @@ import express from 'express';
 const app = express();
 const port = process.env.PORT || 3000;
 
-import WebSocket, { WebSocketServer } from 'ws';
+import { Server } from 'socket.io'
+import http from 'http';
+const server = http.createServer(app);
 
-const wss = new WebSocketServer ({ port: 8082 })
+const wss = new Server(server);
 //const wss = new WebSocketServer ({ port: port })
 
 app.use(express.static('static'));
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
 
@@ -71,23 +73,23 @@ wss.on("connection", ws => {
 
   if (id == 1) {
     player1 = ws;
+    ws.emit('id', id);
     id++;
   } else {
     player2 = ws;
+    ws.emit('id', id);
+    id--;
   }
 
-  ws.on("message",  function message(data, isBinary) {
+  ws.on("playerUpdate",  function message(data, isBinary) {
     const message = isBinary ? data : data.toString();
 
     let parsed = JSON.parse(message);
 
     if (parsed.id == 1) {
       paddle1.y = parsed.paddle.y;
-      player1 = ws;
-      id++;
     } else {
       paddle2.y = parsed.paddle.y;
-      player2 = ws;
     }
 
   })
@@ -109,12 +111,12 @@ setInterval(() => {
   ball.y += ball.velocitY;
 
   // Schicke Link
-  player1.send(JSON.stringify({
+  player1.emit('gameStateUpdate', JSON.stringify({
     ball: ball,
     id: 1,
     paddle: paddle2
   }));
-  player2.send(JSON.stringify({
+  player2.emit('gameStateUpdate', JSON.stringify({
     ball: ball,
     id: 2,
     paddle: paddle1

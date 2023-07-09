@@ -6,35 +6,19 @@ const context = canvas.getContext('2d');
 
 let id;
 
-//const ws = new WebSocket("ws://localhost:8082");
-const ws = new WebSocket("wss://pong-multiplayer-bbwp.onrender.com");
+const ws = io.connect("ws://localhost:3000");
+//const ws = new WebSocket("wss://pong-multiplayer-bbwp.onrender.com");
 
-ws.addEventListener("open", () => {
+ws.on("open", () => {
 
   console.log("wir sind connected");
 
 })
 
-ws.addEventListener("message",function message(data, isBinary) {
+ws.on("gameStateUpdate", function message(message) {
   
-  const message = isBinary ? data : data.data.toString();
-
   let foo = JSON.parse(message);
   ball = foo.ball;
-
-  if (id == null) {
-    if (foo.id == 1) {
-      id = 1;
-      ourPaddle = rightPaddle;
-      otherPaddle = leftPaddle;
-      console.log("Wir sind Spieler 1");
-    } else {
-      id = 2;
-      ourPaddle = leftPaddle;
-      otherPaddle = rightPaddle;
-      console.log("Wir sind Spieler 2");
-    }
-  }
 
   otherPaddle.y = foo.paddle.y;
 
@@ -71,13 +55,19 @@ const leftPaddle = {
 let ourPaddle = leftPaddle;
 let otherPaddle = rightPaddle;
 
-ws.addEventListener("id",function message(data, isBinary) {
+ws.on("id", function message(message) {
   
-  const message = isBinary ? data : data.data.toString();
-
   id = message;
 
-
+  if (id == 1) {
+    ourPaddle = rightPaddle;
+    otherPaddle = leftPaddle;
+    console.log("Wir sind Spieler 1");
+  } else {
+    ourPaddle = leftPaddle;
+    otherPaddle = rightPaddle;
+    console.log("Wir sind Spieler 2");
+  }
 });
 
 // Spiel Ablauf
@@ -88,7 +78,7 @@ function game() {
 // Torwärter werden bewegt
   ourPaddle.y += ourPaddle.velocitY;
 
-  ws.send(JSON.stringify({
+  ws.emit('playerUpdate', JSON.stringify({
     id: id,
     paddle: ourPaddle,
   }));
