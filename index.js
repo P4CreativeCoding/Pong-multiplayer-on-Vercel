@@ -52,8 +52,6 @@ const ball = {
     velocitY: -ballSpeed
   };
 
-
-
 // Boundigbox für Kollision zwischen Objekten
 function collides(obj1, obj2) {
   return obj1.x < obj2.x + obj2.width &&
@@ -92,8 +90,6 @@ wss.on("connection", ws => {
     }
 
   })
-
-
 
   ws.on("close", function close(code, data) {
     
@@ -149,7 +145,6 @@ setInterval(() => {
   if ( (ball.x < 0 || ball.x > width) && !ball.reset) {
     ball.reset = true;
 
-    // Transfer to generic js
     setTimeout(() => { // Kurz Zeit bevor Ball spawnt
       ball.reset = false;
       ball.x = width / 2;

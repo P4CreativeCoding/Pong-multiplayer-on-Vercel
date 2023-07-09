@@ -1,4 +1,4 @@
-// "LogIn", Multiplayer (Sockets), 5 Unit Tests
+
 import { width, height, grid, paddleHeight, paddleSpeed, maxPaddleY } from "./Konstantin.js";
 
 const canvas = document.getElementById('game');
@@ -6,7 +6,7 @@ const context = canvas.getContext('2d');
 
 let id;
 
-const ws = new WebSocket("ws://localhost:8082");
+const ws = new WebSocket("wss://pong-multiplayer-bbwp.onrender.com:8082");
 
 ws.addEventListener("open", () => {
 
@@ -37,7 +37,6 @@ ws.addEventListener("message",function message(data, isBinary) {
 
   otherPaddle.y = foo.paddle.y;
 
-//  leftPaddle.y = message;
 });
 
 let ball = {
