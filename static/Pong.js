@@ -6,6 +6,7 @@ const context = canvas.getContext('2d');
 
 let id;
 
+//const ws = new WebSocket("ws://localhost:8082");
 const ws = new WebSocket("wss://pong-multiplayer-bbwp.onrender.com");
 
 ws.addEventListener("open", () => {
