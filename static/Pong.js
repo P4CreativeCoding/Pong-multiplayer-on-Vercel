@@ -1,6 +1,12 @@
 
 import { width, height, grid, paddleHeight, paddleSpeed, maxPaddleY } from "./Konstantin.js";
 
+const popupOverlay = document.getElementById("popup-overlay");
+const passwordInput = document.getElementById("password-input");
+const loginButton = document.getElementById("login-button");
+const loginErrorMessage = document.getElementById("login-error-message");
+const gameContainer = document.getElementById("gameContainer");
+
 const canvas = document.getElementById('game');
 const context = canvas.getContext('2d');
 
@@ -23,6 +29,8 @@ ws.on("gameStateUpdate", function message(message) {
   otherPaddle.y = foo.paddle.y;
 
 });
+
+hideGame();
 
 let ball = {
 // Spawnt in der Mitte vom Spielfeld
@@ -133,3 +141,34 @@ document.addEventListener('keyup', function(e) {
 
 // SPIEL START
 requestAnimationFrame(game);
+
+// Funktion zum Ausblenden des Popup-Fensters
+function hideLogin() {
+  popupOverlay.style.display = "none";
+}
+function hideGame() {
+  gameContainer.style.display = "none";
+}
+// Funktion zum Anzeigen des Spiels
+function showGame() {
+  const Container = document.getElementById("gameContainer");
+  Container.style.display = "block";
+}
+loginButton.addEventListener("click", function () {
+  const password = passwordInput.value.trim();
+
+  if (password !== "1234") {
+    // Falsches Passwort
+    displayLoginError("Falsches Passwort");
+  } else {
+    // Richtiges Passwort
+    hideLogin();
+    showGame();
+  }
+});
+
+// Funktion zum Anzeigen von Anmeldefehlern
+function displayLoginError(errorMessage) {
+  loginErrorMessage.innerText = errorMessage;
+  loginErrorMessage.style.display = "block";
+}
