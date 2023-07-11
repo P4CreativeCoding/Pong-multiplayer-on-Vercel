@@ -1,5 +1,7 @@
 # Pong
 
+### Passwort: 1234.
+
 ## Beschreibung
 
 Pong ist ein einfaches Multiplayer-Spiel, das auf dem klassischen Arcade-Spiel basiert. Zwei Spieler können gegeneinander Fußball spielen und versuchen mit ihrem Torwart Tore zu schießen. Dieses Projekt wurde mit Express.js und Socket.io auf der Backend-Seite entwickelt. Das Frontend besteht aus einer statischen HTML-Datei. Das gesamte Projekt wird auf Render gehostet.
